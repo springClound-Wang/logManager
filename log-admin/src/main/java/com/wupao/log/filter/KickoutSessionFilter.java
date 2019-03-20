@@ -2,13 +2,11 @@ package com.wupao.log.filter;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.wupao.log.entity.ResponseResult;
-import com.wupao.log.pojo.AdminUser;
 import com.wupao.log.utils.IStatusMessage;
 import com.wupao.log.utils.ShiroFilterUtils;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.CacheManager;
 import org.apache.shiro.session.Session;
-import org.apache.shiro.session.mgt.DefaultSessionKey;
 import org.apache.shiro.session.mgt.SessionManager;
 import org.apache.shiro.subject.Subject;
 import org.apache.shiro.web.filter.AccessControlFilter;
@@ -18,12 +16,10 @@ import org.slf4j.LoggerFactory;
 
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.PrintWriter;
 import java.io.Serializable;
-import java.util.ArrayDeque;
 import java.util.Deque;
 
 /**
@@ -100,7 +96,7 @@ public class KickoutSessionFilter extends AccessControlFilter {
 		logger.debug("session时间设置：" + String.valueOf(session.getTimeout())
 				+ "===========");
 		try {
-			// 当前用户
+		/*	// 当前用户
 			AdminUser user = (AdminUser) subject.getPrincipal();
 			String username = user.getUsername();
 			logger.debug("===当前用户username：==" + username);
@@ -162,11 +158,11 @@ public class KickoutSessionFilter extends AccessControlFilter {
 				saveRequest(request);
 				logger.debug("==踢出后用户重定向的路径kickoutUrl:" + kickoutUrl);
 				// ajax请求
-				/**
+				*//**
 				 * 判断是否已经踢出
 				 * 1.如果是Ajax 访问，那么给予json返回值提示。
 				 * 2.如果是普通请求，直接跳转到登录页
-				 */
+				 *//*
 				// 判断是不是Ajax请求
 				ResponseResult responseResult = new ResponseResult();
 				if (ShiroFilterUtils.isAjax(request)) {
@@ -182,7 +178,7 @@ public class KickoutSessionFilter extends AccessControlFilter {
 					WebUtils.issueRedirect(request, response, kickoutUrl);
 				}
 				return false;
-			}
+			}*/
 			return true;
 		} catch (Exception e) { // ignore
 			// e.printStackTrace();

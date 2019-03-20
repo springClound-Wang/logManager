@@ -1,16 +1,5 @@
 package com.wupao.log.web.user;
 
-import java.text.ParseException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
-
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import com.wupao.log.entity.ResponseResult;
 import com.wupao.log.entity.UserDTO;
 import com.wupao.log.entity.UserRolesVO;
@@ -24,20 +13,13 @@ import com.wupao.log.utils.Constants;
 import com.wupao.log.utils.DateUtil;
 import com.wupao.log.utils.IStatusMessage;
 import com.wupao.log.utils.PageDataResult;
+import com.wupao.tools.utils.ValidateUtil;
 import net.sf.oval.ConstraintViolation;
 import net.sf.oval.Validator;
-
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.SecurityUtils;
-import org.apache.shiro.authc.AuthenticationException;
-import org.apache.shiro.authc.AuthenticationToken;
-import org.apache.shiro.authc.DisabledAccountException;
-import org.apache.shiro.authc.ExcessiveAttemptsException;
-import org.apache.shiro.authc.IncorrectCredentialsException;
-import org.apache.shiro.authc.LockedAccountException;
-import org.apache.shiro.authc.UnknownAccountException;
-import org.apache.shiro.authc.UsernamePasswordToken;
+import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.apache.shiro.cache.Cache;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
@@ -53,7 +35,15 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.wupao.tools.utils.ValidateUtil;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.text.ParseException;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @项目名称：wyait-manage
@@ -89,8 +79,8 @@ public class UserController {
 	@ResponseBody
 	@RequiresPermissions(value = "usermanage")
 	public PageDataResult getUsers(@RequestParam("page") Integer page,
-                                   @RequestParam("limit") Integer limit, UserSearchDTO userSearch,
-                                   HttpServletRequest request) {
+								   @RequestParam("limit") Integer limit, UserSearchDTO userSearch,
+								   HttpServletRequest request) {
 		logger.debug("分页查询用户列表！搜索条件：userSearch：" + userSearch + ",page:" + page
 				+ ",每页记录数量limit:" + limit + "，请求编码："
 				+ request.getCharacterEncoding());

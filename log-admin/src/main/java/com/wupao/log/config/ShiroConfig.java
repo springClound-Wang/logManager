@@ -1,13 +1,10 @@
 package com.wupao.log.config;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.Map;
-
-import javax.servlet.Filter;
-
+import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
 import com.wupao.log.filter.KickoutSessionFilter;
+import com.wupao.log.shiro.ShiroRealm;
+import net.sf.ehcache.CacheException;
+import net.sf.ehcache.CacheManager;
 import org.apache.shiro.cache.ehcache.EhCacheManager;
 import org.apache.shiro.io.ResourceUtils;
 import org.apache.shiro.session.mgt.eis.EnterpriseCacheSessionDAO;
@@ -24,11 +21,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 
-import com.wupao.log.shiro.ShiroRealm;
-
-import at.pollux.thymeleaf.shiro.dialect.ShiroDialect;
-import net.sf.ehcache.CacheException;
-import net.sf.ehcache.CacheManager;
+import javax.servlet.Filter;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 /**
  * @项目名称：lyd-admin
@@ -89,7 +86,7 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/fragments/*", "anon");
 		filterChainDefinitionMap.put("/layout", "anon");
 		//利易达渠道接口
-		filterChainDefinitionMap.put("/infor/lydChannel/creditPageList", "anon");
+		filterChainDefinitionMap.put("/generate/*", "anon");
 
 		filterChainDefinitionMap.put("/user/sendMsg", "anon");
 		filterChainDefinitionMap.put("/user/login", "anon");

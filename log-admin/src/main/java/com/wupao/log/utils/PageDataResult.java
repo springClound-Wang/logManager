@@ -23,8 +23,8 @@ public class PageDataResult {
 	public PageDataResult() {
 	}
 
-	public PageDataResult( Integer totals,
-			List<?> list) {
+	public PageDataResult(Integer totals,
+                          List<?> list) {
 		this.totals = totals;
 		this.list = list;
 	}
