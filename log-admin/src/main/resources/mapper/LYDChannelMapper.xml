@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.LYDChannelMapper">
+	<!-- 分页查询贷款列表 -->
+	<select id="creditPageList" resultType="com.wupao.log.utils.CreditInfo">
+		SELECT
+		    u.orderID,
+		    usr.uid userID,
+		  	u.name,
+		  	u.sex,
+		  	concat_ws('****',  
+            substring(u.number, 1, 4),  
+            substring(u.number, 9, 3)) number,
+		  	u.money,
+		  	u.mark,
+		  	u.status,
+		    u.applyState,
+		    u.createTime,
+		    u.flag
+		FROM
+			(SELECT  ci.orderID,ci.userID,
+		  	ci.name,
+		  	ci.sex,
+		  	ci.number,
+		  	ci.money,
+		  	ci.mark,
+		  	ci.status,
+		    ci.applyState,
+		    ci.createTime, 1 as flag FROM credit_info ci where ci.bankID = 1
+			union all
+			SELECT  bli.orderID,bli.userID,
+		  	bli.name,
+		  	bli.sex,
+		  	bli.number,
+		  	bli.money,
+		  	bli.mark,
+		  	bli.status,
+		    bli.applyState,
+		    bli.createTime, 2 as flag FROM borrow_loan_info bli) u
+		LEFT JOIN
+			user usr
+		ON u.userID = usr.userID
+		  	<where>
+				<if test="uids != null">
+					and u.userID in(
+						select ur.userId from user ur where ur.uid in					
+						<foreach item="item" index="index" collection="uids" open="("
+							separator="," close=")">
+							#{item}
+						</foreach>
+					)
+				</if>
+			  	<if test="param.userName!=null and param.userName!=''">
+			  		<bind name="userNamePattern" value="'%' +param.userName + '%'" />
+			  		and u.name like #{userNamePattern}
+			  	</if>
+	  	
+			  	<if test="param.umobile!=null and param.umobile!=''">
+			  		<bind name="umobilePattern" value="'%' +param.umobile + '%'" />
+			  		and u.number like #{umobilePattern}
+			  	</if>
+			  	<if test="param.startDate!=null and param.startDate!=''">
+			  		and u.createTime &gt;=#{param.startDate}
+			  	</if>
+			  	<if test="param.endDate!=null and param.endDate!=''">
+			  		and u.createTime &lt;=#{param.endDate}
+			  	</if>
+  		</where> 
+  		order by u.createTime desc
+	</select>
+</mapper>

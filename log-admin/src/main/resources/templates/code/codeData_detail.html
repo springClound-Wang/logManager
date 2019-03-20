@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head th:include="layout :: htmlhead" th:with="title='网店授权'"></head>
+<script type="text/javascript" th:inline="javascript">
+	var currentPage = /*[[${currentPage}]]*/;
+	var insertTime=/*[[${loanShopInfo.insertTime}]]*/;
+	var flag=/*[[${flag}]]*/;
+</script>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+	<!--主体 -->
+    <div class="layui-body">
+    	<div class="layui-container" style="width: 80%">
+    		<fieldset class="layui-elem-field layui-field-title"
+			style="margin-top: 20px;">
+				<legend>网店授权详情</legend>
+			</fieldset>
+	        <form id="userForm" class="layui-form layui-form-pane" style="margin-top: 20px;">
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">用户名</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                    <input id="uniqueFlag" name="uniqueFlag" th:value="${loanShopInfo.uniqueFlag==null?'':loanShopInfo.uniqueFlag}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">店铺类型</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                    <input id="shopType" name="shopType" th:value="${loanShopInfo.shopType==1?'天猫':'淘宝'}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">经营年限</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                    <input id="openDate" name="openDate" th:value="${loanShopInfo.openDate==null?'':loanShopInfo.openDate}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">宝贝与描述相符得分</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                    <input id="describeScore" name="describeScore" th:value="${loanShopInfo.describeScore==null?'':loanShopInfo.describeScore}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">比同行业平均水平</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="describeTradeLevel" name="describeTradeLevel" th:value="${loanShopInfo.describeTradeLevel==null?'':loanShopInfo.describeTradeLevel}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">卖家的服务态度得分</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="serviceScore" name="serviceScore" th:value="${loanShopInfo.serviceScore==null?'':loanShopInfo.serviceScore}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            
+	           <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">卖家的服务态度—比同行业平均水平</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="serviceTradeLevel" name="serviceTradeLevel" th:value="${loanShopInfo.serviceTradeLevel==null?'':loanShopInfo.serviceTradeLevel}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">物流服务的质量得分</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="logisticsScore" name="logisticsScore" th:value="${loanShopInfo.logisticsScore==null?'':loanShopInfo.logisticsScore}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		            </div>
+	            </div>
+	            
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">物流服务的质量—比同行业平均水平</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="logisticsTradeLevel" name="logisticsTradeLevel" th:value="${loanShopInfo.logisticsTradeLevel==null?'':loanShopInfo.logisticsTradeLevel}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">一般违规</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="generalMisdeeds" name="generalMisdeeds" th:value="${loanShopInfo.generalMisdeeds==null?'':loanShopInfo.generalMisdeeds}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            
+	           <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">严重违规</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="seriousMisdeeds" name="seriousMisdeeds" th:value="${loanShopInfo.seriousMisdeeds==null?'':loanShopInfo.seriousMisdeeds}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">售假违规</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="sellingMisdeeds" name="sellingMisdeeds" th:value="${loanShopInfo.sellingMisdeeds==null?'':loanShopInfo.sellingMisdeeds}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		            </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">店铺名称</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="shopName" name="shopName" th:value="${loanShopInfo.shopName==null?'':loanShopInfo.shopName}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">真实姓名</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="realName" name="realName" th:value="${loanShopInfo.realName==null?'':loanShopInfo.realName}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">证件类型</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="certificatesType" name="certificatesType" th:value="${loanShopInfo.certificatesType==null?'':loanShopInfo.certificatesType}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">证件号码</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="certificatesNo" name="certificatesNo" th:value="${loanShopInfo.certificatesNo==null?'':loanShopInfo.certificatesNo}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">注册时间</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="registerTime" name="registerTime" th:value="${loanShopInfo.registerTime==null?'':loanShopInfo.registerTime}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+	                	<label class="layui-form-label" style="margin-left: 50px;width: 20%">绑定邮箱</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="bindingEmail" name="bindingEmail" th:value="${loanShopInfo.bindingEmail==null?'':loanShopInfo.bindingEmail}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">绑定手机</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="bindingPhone" name="bindingPhone" th:value="${loanShopInfo.bindingPhone==null?'':loanShopInfo.bindingPhone}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">绑定淘宝ID</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="bindingTaobaoId" name="bindingTaobaoId" th:value="${loanShopInfo.bindingTaobaoId==null?'':loanShopInfo.bindingTaobaoId}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">支付宝账号</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="alipayAccount" name="alipayAccount" th:value="${loanShopInfo.alipayAccount==null?'':loanShopInfo.alipayAccount}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+	                	<label class="layui-form-label" style="margin-left: 50px;width: 20%">公司名称</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="company" name="company" th:value="${loanShopInfo.company==null?'':loanShopInfo.company}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">工商营业执照注册号</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="businessNumber" name="businessNumber" th:value="${loanShopInfo.businessNumber==null?'':loanShopInfo.businessNumber}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+	                	<label class="layui-form-label" style="margin-left: 50px;width: 20%">法人姓名</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="corporation" name="corporation" th:value="${loanShopInfo.corporation==null?'':loanShopInfo.corporation}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	           <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">创建时间</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="insertTime" name="insertTime" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">贷款总额</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="creditSum" name="creditSum" th:value="${loanShopInfo.creditSum==null?'':loanShopInfo.creditSum}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		            </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">公司性质</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="companyNature" name="companyNature" th:value="${loanShopInfo.companyNature==null?'':loanShopInfo.companyNature}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">注册资金</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="registerMoney" name="registerMoney" th:value="${loanShopInfo.registerMoney==null?'':loanShopInfo.registerMoney}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">年销售额</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="annualSales" name="annualSales" th:value="${loanShopInfo.annualSales==null?'':loanShopInfo.annualSales}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+	                	<label class="layui-form-label" style="margin-left: 50px;width: 20%">花呗额度</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="huabeiMoney" name="huabeiMoney" th:value="${loanShopInfo.huabeiMoney==null?'':loanShopInfo.huabeiMoney}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">公司成立时间</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="establishTime" name="establishTime" th:value="${loanShopInfo.establishTime==null?'':loanShopInfo.establishTime}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+	                	<label class="layui-form-label" style="margin-left: 50px;width: 20%">主营渠道</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="mainChannel" name="mainChannel" th:value="${loanShopInfo.mainChannel==null?'':loanShopInfo.mainChannel}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">订单贷款</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="orderCredit" name="orderCredit" th:value="${loanShopInfo.orderCredit==null?'':loanShopInfo.orderCredit}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">随借随还</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="anyTimeCredit" name="anyTimeCredit" th:value="${loanShopInfo.anyTimeCredit==null?'':loanShopInfo.anyTimeCredit}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">等额本金</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="equalCredit" name="equalCredit" th:value="${loanShopInfo.equalCredit==null?'':loanShopInfo.equalCredit}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">按月付息12个月</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="monthlyCredit" name="monthlyCredit" th:value="${loanShopInfo.monthlyCredit==null?'':loanShopInfo.monthlyCredit}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		                <label class="layui-form-label" style="width: 20%">天猫专属（组合贷）</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="groupCredit" name="groupCredit" th:value="${loanShopInfo.groupCredit==null?'':loanShopInfo.groupCredit}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+		                
+		                <label class="layui-form-label" style="margin-left: 50px;width: 20%">使用中的贷款数量</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<input id="useCreditNum" name="useCreditNum" th:value="${loanShopInfo.useCreditNum==null?'':loanShopInfo.useCreditNum}" lay-verify="required" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+		                </div>
+	                </div>
+	            </div>
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+		            	<label class="layui-form-label" style="width: 20%">公司注册地址</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<textarea class="layui-textarea" id="registerAddress" name="registerAddress" th:text="${loanShopInfo.registerAddress==null?'':loanShopInfo.registerAddress}" readonly="readonly"></textarea>
+		                </div>
+		                
+		            	<label class="layui-form-label" style="margin-left: 50px;width: 20%">公司联系地址</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<textarea class="layui-textarea" id="contactAddress" name="contactAddress" th:text="${loanShopInfo.contactAddress==null?'':loanShopInfo.contactAddress}" readonly="readonly"></textarea>
+			            </div>
+	                </div>
+	            </div> 
+	            <div class="layui-form-item">
+	            	<div class="layui-inline" style="width: 100%">
+			            <label class="layui-form-label" style="width: 20%">营业执照经营范围</label>
+		                <div class="layui-input-inline" style="width: 20%">
+		                	<textarea class="layui-textarea" id="businessScope" name="businessScope" th:text="${loanShopInfo.businessScope==null?'':loanShopInfo.businessScope}" readonly="readonly"></textarea>
+		                </div>
+		            </div>	
+	            </div> 
+	            
+	            
+	            <div class="layui-form-item">
+	                <div class="layui-input-block" style="margin-left: 10px;">
+	                    <button type="button" class="layui-btn layui-btn-primary" onclick="backset();">返回</button>
+	                </div>
+	            </div>
+	        </form>
+	    </div>
+	</div>
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/dateUtils.js"></script>
+    <script src="/js/code/codeData_detail.js"></script>
+</div>
+</body>
+</html>

@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<!--head部分-->
+<head th:include="layout :: htmlhead" th:with="title='利易达贷款后台'">
+</head>
+<body class="layui-layout-body">
+    <div class="layui-layout layui-layout-admin">
+        <!--头-->
+        <div th:replace="fragments/head :: header"></div>
+        <!--主体区域-->
+        <div class="layui-body">
+	        <div class="layui-container">
+	        <div class="layui-row">
+	            <div class="layui-col-xs3" style="min-width:190px; ">
+	                <div style="margin-top: 100px;">
+	                    <img src="/images/lydlogo.png" onclick="toLiyida();" style="cursor: pointer;"/>
+	                </div>
+	            </div>
+	            <div class="layui-col-xs9">
+	                    &nbsp;
+			        <h1 style="padding-top:50px;margin-left:10px; line-height:2.5;">欢迎登录<br/>利易达贷款后台</h1>
+	            </div>
+		    </div>
+		    </div>
+	    </div>
+        <!--底部-->
+        <div th:replace="fragments/footer :: footer"></div>
+    </div>
+</body>
+</html>

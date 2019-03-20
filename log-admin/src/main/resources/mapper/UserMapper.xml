@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.UserMapper">
+	<!-- 根据手机号查询用户且用户存在 -->
+	<select id="selectByMobile" resultType="com.wupao.log.pojo.User">
+		select * 
+		from user 
+		<where>
+			<if test="mobile!=null and mobile!=''">
+			  and mobile = #{mobile}
+			</if>
+			and status = 0
+		</where>
+		limit 1
+	</select>
+	
+	<!-- 查询所有用户信息 -->
+	<select id="selectAllUser" resultType="com.wupao.log.pojo.User">
+		select * from user 
+		<where>
+			<if test="username!=null and username!=''">
+				and username like concat(concat('%',#{username}),'%') 
+			</if>
+			<if test="mobile!=null and mobile!=''">
+				and mobile like concat(concat('%',#{mobile}),'%')
+			</if>
+			<if test="insertTimeStart!=null and insertTimeStart!=''">
+				and insert_time &gt;= #{insertTimeStart}
+			</if>
+			<if test="insertTimeEnd!=null and insertTimeEnd!=''">
+				and insert_time &lt;= #{insertTimeEnd}
+			</if>
+			<if test="status!=null">
+				and status = #{status}
+			</if>
+			<if test="repeat!=null">
+				and  mobile In (Select mobile From user Group By mobile Having Count(mobile)>1)
+			</if>
+		</where>
+		order by insert_time desc
+	</select>
+	<!-- 查询所有用户信息 -->
+	<!-- 删除用户需要：查询userid相关表的是否有信息存在 -->
+	<select id="selectCreditApply" resultType="int">
+		select count(userID) from credit_apply where userID = #{userID}
+	</select>
+	<select id="selectCreditInfo" resultType="int">
+		select count(userID) from credit_info where userID = #{userID}
+	</select>
+	<select id="selectCreditLink" resultType="int">
+		select count(userID) from credit_link where userID = #{userID}
+	</select>
+	<select id="selectCreditPic" resultType="int">
+		select count(userID) from credit_pic where userID = #{userID}
+	</select>
+	<select id="selectShopEstimate" resultType="int">
+		select count(userID) from shop_estimate where userID = #{userID}
+	</select>
+	<!-- 删除用户需要：查询userid相关表的是否有信息存在 -->
+	<!-- 删除用户需要：根据手机号查询所有用户信息，包括被删除用户 -->
+	<select id="selectByPhone" resultType="com.wupao.log.pojo.User">
+		select * from user 
+		<where>
+			<if test="mobile!=null and mobile!=''">
+				and mobile = #{mobile}
+			</if>
+		</where>
+	</select>
+	<!-- 删除用户需要：根据手机号查询所有用户信息，包括被删除用户 -->
+	<!-- 删除用户 -->
+	<update id="updCustomer">
+		update user 
+		set status = #{status},update_time = now() 
+		where userID = #{userID}
+	</update>
+	<!-- 删除用户 -->
+	<!-- 删除用户需要：修改userID相关表 -->
+	<update id="updcreditApply">
+		update credit_apply set userID = #{newUserID},updateTime = now()
+		where userID = #{oldUserID}
+	</update>
+	<update id="updcreditInfo">
+		update credit_info set userID = #{newUserID},updateTime = now()
+		where userID = #{oldUserID}
+	</update>
+	<update id="updcreditLink">
+		update credit_link set userID = #{newUserID},updateTime = now()
+		where userID = #{oldUserID}
+	</update>
+	<update id="updcreditPic">
+		update credit_pic set userID = #{newUserID},updateTime = now()
+		where userID = #{oldUserID}
+	</update>
+	<update id="updshopEstimate">
+		update shop_estimate set userID = #{newUserID},updateTime = now()
+		where userID = #{oldUserID}
+	</update>
+	<!-- 删除用户需要：修改userID相关表 -->
+	
+	<!-- 更新用户部分信息 -->
+	<update id="updateUser">
+		update user
+		<set>
+    		<if test="userId!=null and userId!=''">
+    			userID = #{userId},
+    		</if>
+    		<if test="userphone!=null and userphone!=''">
+    			mobile = #{userphone}
+    		</if>
+    	</set>
+    	where userID = #{uid}
+	</update>
+	
+</mapper>

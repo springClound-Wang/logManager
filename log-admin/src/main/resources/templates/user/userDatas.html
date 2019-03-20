@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html  xmlns:th="http://www.thymeleaf.org"
+       xmlns:shiro="http://www.pollix.at/thymeleaf/shiro">
+<head th:include="layout :: htmlhead" th:with="title='贷款用户列表'"></head>
+<body class="layui-layout-body">
+<div class="layui-layout layui-layout-admin">
+    <!--头-->
+    <div th:replace="fragments/head :: header"></div>
+
+    <div class="layui-body" style="margin: 1%">
+		<fieldset class="layui-elem-field layui-field-title"
+			style="margin-top: 20px;">
+			<legend>贷款用户列表</legend>
+		</fieldset>
+        <form id="userSearch" class="layui-form layui-form-pane" method="post" action="" style="margin-top: 20px;" accept-charset="UTF-8" >
+            <div class="layui-form-item">
+                <label class="layui-form-label">用户名</label>
+                <div class="layui-input-inline">
+                    <input id="username" name="username" autocomplete="off" placeholder="支持模糊查询" maxlength="15" class="layui-input" type="text"/>
+                </div>
+                <label class="layui-form-label">手机号</label>
+                <div class="layui-input-inline">
+                    <input id="mobile" name="mobile" maxlength="11" placeholder="请输入手机号" autocomplete="off" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+                </div>
+                
+            </div>
+
+            <div class="layui-form-item">
+				<label class="layui-form-label">用户状态</label>
+				<div class="layui-input-inline" style="width: 200px;">
+					<input name="status" value="" type="radio" class="layui-radio" title="全部" checked="checked"/>
+					<input id="status" name="status" value="1" type="radio" class="layui-radio" title="已删除"/>
+				</div>
+				                    
+				<label class="layui-form-label">重复手机号</label>
+				<div class="layui-input-inline">
+					<input name="repeat" value="" type="radio" class="layui-radio" title="全部" checked="checked"/>
+					<input id="repeat" name="repeat" value="1" type="radio" class="layui-radio" title="重复"/>
+				</div>
+				
+            </div>
+            <div class="layui-form-item">
+                <div class="layui-inline">
+                    <label class="layui-form-label">注册时间</label>
+                        <div class="layui-input-inline" style="width: 175px;">
+                            <input  name="insertTimeStart" id="insertTimeStart" placeholder="开始时间" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+                        </div>
+                    <div class="layui-form-mid">-</div>
+                    <div class="layui-input-inline" style="width: 175px;margin-right: 20px;">
+                         <input name="insertTimeEnd" id="insertTimeEnd" placeholder="结束时间" autocomplete="off" class="layui-input" type="text" readonly="readonly"/>
+                  	</div>
+                    <button class="layui-btn layui-btn-normal"  lay-submit="" lay-filter="searchSubmit">提交</button>
+            		<button class="layui-btn layui-btn-primary" lay-submit="" lay-filter=""> 重置</button>
+                </div>
+            </div>
+        </form>
+
+        <table id="uesrList" lay-filter="userTable"></table>
+      
+        <script type="text/html" id="optBar">
+			{{#  if(d.status==1){ }}
+            <a class="layui-btn layui-btn-normal layui-btn-xs" lay-event="recover" shiro:hasPermission="recoverCustomer">恢复</a>
+			{{#  } else if(d.status==0) { }}
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del" shiro:hasPermission="delCustomer">删除</a>
+			{{#  } }}
+            <a class="layui-btn layui-btn-xs" lay-event="update" shiro:hasPermission="delCustomer">编辑</a>
+        </script>
+    </div>
+
+
+	<!-- 编辑用户 -->
+	<div id="updateUser" class="layer_self_wrap" style="width:400px;display:none;">
+		<form action="" id="updateUserForm" class="layui-form layui-form-pane" method="post" style="margin-top: 20px;">
+			<input id="uid" name="uid" type="hidden" />
+			<div class="layui-form-item">
+				<label class="layui-form-label">用户编号</label>
+				<div class="layui-input-block">
+					<input id="userId" name="userId" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<label class="layui-form-label">手机号</label>
+				<div class="layui-input-block">
+					<input id="userphone" name="userphone" maxlength="11" lay-verify="phone" autocomplete="off" class="layui-input" type="text" onkeyup="this.value=this.value.replace(/\D/g,'')"
+                           onafterpaste="this.value=this.value.replace(/\D/g,'')"/>
+				</div>
+			</div>
+			<div class="layui-form-item">
+				<div class="layui-input-block" style="margin-left: 80%;">
+					<button class="layui-btn"  lay-submit="" lay-filter="updateUserSubmit">确定</button>
+				</div>
+			</div>
+		</form>
+	</div>  
+    <!--底部-->
+    <div th:replace="fragments/footer :: footer"></div>
+    <script src="/js/dateUtils.js"></script>
+    <script src="/js/user/userDatas.js"></script>
+
+</div>
+</body>
+</html>

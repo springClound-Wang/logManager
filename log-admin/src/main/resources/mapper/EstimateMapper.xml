@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.EstimateMapper">
+	<!-- 获取额度预估列表 -->
+	<select id="selectEstimateInfoList" resultType="java.util.Map">
+		select e.*,u.mobile
+		from shop_estimate e
+		inner join user u on
+		e.userID=u.userID
+		where e.status=1
+		and u.status=0
+		<if test="startDate!=null and startDate!=''">
+			and e.createTime &gt;#{startDate}
+		</if>
+		<if test="endDate!=null and endDate!=''">
+			and e.createTime &lt;#{endDate}
+		</if>
+		<if test="mobile!=null and mobile!=''">
+			and u.mobile like concat(concat('%',#{mobile}),'%')
+		</if>
+		order by e.createTime desc
+	</select>
+	<!-- 获取额度预估 列表-->
+	<!-- 删除额度预估数据 -->
+	<update id="updateById">
+		update shop_estimate set 
+		<if test="status!=null">
+			status = #{status},
+		</if>
+		<if test="time!=null">
+			updateTime = #{time}
+		</if>
+		where id = #{id}
+	</update>
+	<!-- 删除额度预估数据 -->
+	<!-- 查询一条额度预估数据 -->
+	<select id="selectById" resultType="com.wupao.log.entity.ShopEstimateUserVo">
+		select e.*,u.mobile,u.username
+		from shop_estimate e
+		inner join user u on
+		e.userID=u.userID
+		where e.status=1 
+		and u.status=0
+		and e.id = #{id}
+	</select>
+	<!-- 查询一条额度预估数据 -->
+</mapper>

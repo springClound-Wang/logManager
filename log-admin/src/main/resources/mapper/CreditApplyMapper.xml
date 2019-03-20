@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.CreditApplyMapper">
+	<resultMap id="BaseResultMap" type="com.wupao.log.pojo.CreditApplyBean">
+		<result column="userID" property="userID" jdbcType="VARCHAR" />
+		<result column="orderID" property="orderID" jdbcType="VARCHAR" />
+		<result column="name" property="name" jdbcType="VARCHAR" />
+		<result column="number" property="number" jdbcType="VARCHAR" />
+		<result column="receiver" property="receiver" jdbcType="VARCHAR" />
+		<result column="bankID" property="bankID" jdbcType="INTEGER" />
+		<result column="shopType" property="shopType" jdbcType="INTEGER" />
+		<result column="money" property="money" jdbcType="DECIMAL" />
+		<result column="channel" property="channel" jdbcType="INTEGER" />
+		<result column="status" property="status" jdbcType="INTEGER" />
+		<result column="mark" property="mark" jdbcType="VARCHAR" />
+		<result column="kind" property="kind" jdbcType="INTEGER" />
+		<result column="createTime" property="createTime" jdbcType="VARCHAR" />
+		<result column="updateTime" property="updateTime" jdbcType="VARCHAR" />
+		<result column="username" property="receivername" jdbcType="VARCHAR" />
+		<result column="source" property="source" jdbcType="INTEGER" />
+	</resultMap>
+	<sql id="Base_Column_List">
+		a.userID,a.orderID,a.name,a.number,
+		u.username,a.receiver,
+		a.bankID,a.shopType,a.money,a.channel,
+		a.status,a.mark,a.kind,a.createTime,a.updateTime,a.source
+	</sql>
+	<select id="selectApplyList" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from credit_apply a
+		left join admin_user u 
+		on a.receiver=u.id
+		where 1=1
+		<if test="cib.userID!=null">
+			
+			<if test="check==0">
+			 and a.receiver=#{cib.userID} 
+			 or a.receiver is null 
+			</if>
+			<if test="check!=0">
+			  and (a.receiver is null or a.receiver=#{cib.userID})
+			</if>
+		</if> 
+			<if test="cib.kind!=null and cib.kind!=0">
+				and a.kind=#{cib.kind}  
+			</if>
+			
+			<if test="cib.channel!=null and cib.channel!=0">
+				and a.channel=#{cib.channel}
+			</if>
+			<if test="startDate!=null and startDate!=''">
+				and a.createTime &gt; #{startDate}
+			</if>
+			<if test="endDate!=null and endDate!=''">
+				and a.createTime &lt; #{endDate}
+			</if>
+			<if test="cib.name!=null and cib.name!=''">
+				and a.name like concat(concat('%',#{cib.name}),'%')
+			</if>
+			<if test="cib.number!=null and cib.number!=''">
+				and a.number like concat(concat('%',#{cib.number}),'%') 
+			</if>
+			<if test="cib.receivername!=null and cib.receivername!=''">
+				and u.username like concat(concat('%',#{cib.receivername}),'%') 
+			</if>
+			<if test="cib.status!=null and cib.status!=0">
+				and a.status=#{cib.status}
+			</if>
+		order by a.createTime desc
+	</select>
+	<select id="selectApplyByOrderId" resultMap="BaseResultMap">
+		select
+		<include refid="Base_Column_List" />
+		from credit_apply a
+		left join admin_user u 
+		on a.receiver=u.id where a.orderID=#{orderid}
+	</select>
+
+	<!--编辑审核 -->
+	<update id="updateApplyInfo">
+		update credit_apply
+		<set>
+			mark=#{mark},
+			<if test="status!=null and status!=0">
+				status=#{status},
+			</if>
+			<if test="receiver!=null and receiver!=''">
+				receiver=#{receiver},
+			</if>
+			<if test="channel!=null and channel !=0">
+				channel=#{channel},
+			</if>
+			<if test="bankID!=null and bankID !=0">
+				bankID=#{bankID}
+			</if>
+		</set>
+		where orderID = #{orderID}
+	</update>
+	<!-- 根据申请信息订单ID修改申请人id -->
+	<update id="changeUserId">
+		update credit_apply
+		<set>
+			<if test="userId!=null and userId!=''">
+				userID = #{userId},
+			</if>
+			<if test="time != null">
+				updateTime = #{time},
+			</if>
+		</set>
+		where orderID = #{orderID}
+	</update>
+	<!-- 根据申请信息订单ID修改申请人id -->
+	<!-- 根据orderID查询申请信息 -->
+	<select id="selectByOrderID" resultType="int">
+		select count(orderID)
+		from credit_apply
+		where orderID = #{orderID}
+	</select>
+	<!-- 根据orderID查询申请信息 -->
+
+    <!-- 添加贷款申请 -->
+    <insert id="addCreditApply" parameterType="com.wupao.log.pojo.CreditApplyBean">
+		insert into
+		credit_apply(orderID,userID,name,number,status,kind,createTime,updateTime,receiver,bankID,channel,mark,source)
+		values
+		(#{orderID},#{userID},#{name},#{number},#{status},#{kind},now(),now(),#{receiver},#{bankID},#{channel},#{mark},0);
+	</insert>
+</mapper>

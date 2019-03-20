@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.BorrowLoanInfoMapper" >
+  <resultMap id="BaseResultMap" type="com.wupao.log.pojo.BorrowLoanInfoBean" >
+    <id column="orderID" property="orderid" jdbcType="VARCHAR" />
+    <result column="userID" property="userid" jdbcType="VARCHAR" />
+    <result column="bankID" property="bankid" jdbcType="INTEGER" />
+    <result column="name" property="name" jdbcType="VARCHAR" />
+    <result column="sex" property="sex" jdbcType="INTEGER" />
+    <result column="IDcard" property="idcard" jdbcType="VARCHAR" />
+    <result column="cardNumber" property="cardnumber" jdbcType="VARCHAR" />
+    <result column="number" property="number" jdbcType="VARCHAR" />
+    <result column="region" property="region" jdbcType="VARCHAR" />
+    <result column="city" property="city" jdbcType="VARCHAR" />
+    <result column="area" property="area" jdbcType="VARCHAR" />
+    <result column="street" property="street" jdbcType="VARCHAR" />
+    <result column="workRegion" property="workregion" jdbcType="VARCHAR" />
+    <result column="workCity" property="workcity" jdbcType="VARCHAR" />
+    <result column="workArea" property="workarea" jdbcType="VARCHAR" />
+    <result column="workStreet" property="workstreet" jdbcType="VARCHAR" />
+    <result column="schemeID" property="schemeid" jdbcType="INTEGER" />
+    <result column="money" property="money" jdbcType="DECIMAL" />
+    <result column="creditUsage" property="creditusage" jdbcType="INTEGER" />
+    <result column="mark" property="mark" jdbcType="VARCHAR" />
+    <result column="applyState" property="applystate" jdbcType="INTEGER" />
+    <result column="resReason" property="resreason" jdbcType="VARCHAR" />
+    <result column="status" property="status" jdbcType="INTEGER" />
+    <result column="createTime" property="createtime" jdbcType="VARCHAR" />
+    <result column="updateTime" property="updatetime" jdbcType="VARCHAR" />
+    <result column="application_id" property="applicationId" jdbcType="VARCHAR" />
+  </resultMap>
+
+  <sql id="Base_Column_List" >
+    orderID, userID, bankID, name, sex, IDcard, cardNumber, number, region, city, area, 
+    street, workRegion, workCity, workArea, workStreet, schemeID, money, creditUsage, 
+    mark, applyState, resReason, status, createTime, updateTime, application_id
+  </sql>
+    <select id="selectCreditInfoList" resultType="com.wupao.log.pojo.BorrowLoanInfoBean">
+        select <include refid="Base_Column_List"></include>
+        from borrow_loan_info i
+        <where>
+            <if test="startDate!=null and startDate!=''">
+                and i.createTime &gt;#{startDate}
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                and i.createTime &lt;#{endDate}
+            </if>
+            <if test="cib.number!=null and cib.number!=''">
+                and i.number like concat(concat('%',#{cib.number}),'%')
+            </if>
+            <if test="cib.name!=null and cib.name!=''">
+                and i.name like concat(concat('%',#{cib.name}),'%')
+            </if>
+
+            <if test="cib.status!=null and cib.status!=-1">
+                and status = #{cib.status}
+            </if>
+            and i.bankid=2
+        </where>
+        order by i.createTime desc
+    </select>
+    <!-- 绑定 -->
+    <update id="bindingUserId">
+        update borrow_loan_info
+        <set>
+            <if test="userId!=null and userId!=''">
+                userID = #{userId}
+            </if>
+        </set>
+        where orderID = #{orderID}
+    </update>
+    <!-- 查看极速借贷款资料详情-->
+    <select id="selectBorrowDetailInfo" resultType="com.wupao.log.pojo.BorrowLoanInfoBean">
+	   select i.userid,i.orderid,i.bankid,i.name,i.sex,u.email,i.IDcard,i.cardNumber,i.number,i.region,i.city,i.area,i.street,i.workRegion,i.workCity,i.workArea,i.workStreet,i.money,i.creditUsage,cs.repay_method,cs.repay_period,i.mark,
+i.createTime,i.updateTime,ck.link_name1,ck.link_name2,ck.link_name3,ck.link_type1,ck.link_type2,ck.link_type3,ck.link_number1,ck.link_number2,ck.link_number3,
+cp.pic1,cp.pic2,cp.pic3,i.application_id,i.source
+		from borrow_loan_info i
+		inner join user u on
+		i.userID=u.userID inner join credit_link ck on i.orderID=ck.orderID inner join credit_pic cp on i.orderID=cp.orderID inner join credit_scheme cs on i.schemeID=cs.id  where i.orderid=#{rid} and i.userid=#{uid}
+    </select>
+
+    <!-- 审批 -->
+    <update id="updateCreditInfo">
+        update borrow_loan_info
+        <set>
+            <if test="status!=null">
+                status = #{status},
+            </if>
+            <if test="mark!=null and mark!=''">
+                mark = #{mark},
+            </if>
+            updateTime =now(),
+        </set>
+        where orderID = #{orderID}
+    </update>
+    
+    <!-- 查看极速借贷款资料详情——查询极速借借款信息 -->
+    <select id="selectJiSujieLoanInfo" resultType="com.wupao.log.pojo.JisujieLoan">
+    	SELECT
+		message_id,uid,application_id,`status`,`desc`,notify_time,form_id,source_type,content,amount
+		FROM
+			jisujie_loan
+		WHERE
+			application_id = #{applicationId}
+		ORDER BY notify_time DESC
+		LIMIT 1
+    </select>
+    
+    <!-- 根据id查询极速借地址信息 -->
+    <select id="getAttrById" resultType="com.wupao.log.pojo.BorrowLoanRegion">
+    	SELECT
+			id,`name`,pid
+		FROM
+			borrow_loan_region
+		WHERE
+			id = #{id} and pid = #{pid}
+    </select>
+    
+    <!-- 根据applicationid查询极速借信息的orderID -->
+    <select id="getLoanInfoByAid" resultType="java.lang.String">
+    	select orderID from borrow_loan_info 
+		where application_id = #{applicationId}
+		ORDER BY createTime DESC
+		LIMIT 1
+    </select>
+    
+    <!-- 根据订单编号查询信息是否存在-->
+    <select id="selectCountInfoByOrderId" resultType="integer">
+      SELECT COUNT(orderID) FROM borrow_loan_info WHERE orderID =#{orderId}
+    </select>
+
+</mapper>
