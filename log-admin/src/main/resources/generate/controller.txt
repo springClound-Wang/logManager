@@ -1,0 +1,69 @@
+package {controllerPkgName};
+
+import {servicePackageName}.{serviceName};
+import {beanPackageName}.{beanName};
+import com.wupao.log.utils.Constants;
+import com.wupao.log.utils.PageDataResult;
+import com.wupao.log.utils.ResultUtil;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.*;
+
+import javax.servlet.http.HttpServletRequest;
+
+
+@Controller
+@RequestMapping("/{beanParamName}")
+@Slf4j
+public class {controllerName} {
+    @Autowired
+    {serviceName} {serviceParamName};
+
+    @GetMapping("/{beanParamName}List")
+    public String {beanParamName}List(String curr, HttpServletRequest request) {
+        request.setAttribute(Constants.CURRENTPAGE, curr);
+        return "/{beanParamName}/{beanParamName}List";
+    }
+   
+    @PostMapping("/select{beanName}InfoList")
+    @ResponseBody
+    public PageDataResult select{beanName}InfoList({beanName} {beanParamName}, String startDate, String endDate,
+                                                @RequestParam("page") int page,
+                                                @RequestParam("limit") int limit) {
+        PageDataResult pdr = new PageDataResult();
+        try {
+            log.info(this.getClass()+".select{beanName}InfoList()根据参数获取记录列表的请求参数==>{beanParamName}:{},startDate:{}endDate:{}page:{}limit:{}",{beanParamName},startDate,endDate,page,limit);
+            pdr = {serviceParamName}.select{beanName}InfoList({beanParamName}, startDate, endDate, page, limit);
+            log.info(this.getClass()+".select{beanName}InfoList()根据参数获取记录列表成功:{}" ,pdr);
+        } catch (Exception e) {
+            e.printStackTrace();
+            pdr.setCode(Constants.HTTP_500_CODE);
+            log.error(this.getClass()+".select{beanName}InfoList()根据参数获取记录列表失败原因为：{}", e);
+        }
+        return pdr;
+    }
+    
+    @PostMapping("/del{beanName}Info/{id}")
+    @ResponseBody
+    public ResultUtil del{beanName}Info(@PathVariable("id") Long id ){
+       return  {serviceParamName}.del{beanName}Info(id);
+    }
+
+    @PostMapping("/add{beanName}")
+    @ResponseBody
+    public ResultUtil add{beanName}({beanName} {beanParamName}){
+        return  {serviceParamName}.add{beanName}({beanParamName});
+    }
+    @PostMapping("/update{beanName}")
+    @ResponseBody
+    public ResultUtil update{beanName}({beanName} {beanParamName}){
+        return  {serviceParamName}.update{beanName}({beanParamName});
+    }
+
+    @PostMapping("/get{beanName}/{id}")
+    @ResponseBody
+    public ResultUtil get{beanName}(@PathVariable Long id) {
+        return {serviceParamName}.get{beanName}(id);
+    }
+}

@@ -1,0 +1,16 @@
+package {servicePackageName};
+
+
+import {beanPackageName}.{beanName};
+import com.wupao.log.utils.PageDataResult;
+import com.wupao.log.utils.ResultUtil;
+
+
+public interface {serviceName} {
+
+	PageDataResult select{beanName}InfoList({beanName} {beanParamName}, String startDate, String endDate, int page, int limit);
+	ResultUtil del{beanName}Info(Long id);
+    ResultUtil add{beanName}({beanName} {beanParamName});
+    ResultUtil update{beanName}({beanName} {beanParamName});
+    ResultUtil get{beanName}(Long id);
+}

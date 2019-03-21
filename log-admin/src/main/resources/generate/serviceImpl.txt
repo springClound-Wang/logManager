@@ -1,0 +1,78 @@
+package {servicePackageName}.impl;
+
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import {daoPackageName}.{daoName};
+import {beanPackageName}.{beanName};
+import {servicePackageName}.{serviceName} ;
+import com.wupao.log.utils.PageDataResult;
+import com.wupao.log.utils.ResultUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+@Service
+public class {serviceName}Impl implements {serviceName} {
+    @Autowired
+    {daoName} {daoParamName};
+    
+    @Override
+    @Transactional
+    public ResultUtil del{beanName}Info(Long id) {
+        ResultUtil r=new ResultUtil();
+        int count={daoParamName}.del{beanName}Info(id);
+        if(count>0){
+            r.setResult(ResultUtil.SUCCESS);
+        }else{
+            r.setResult(ResultUtil.ERROR);
+        }
+        return r;
+    }
+
+    @Override
+    @Transactional
+    public ResultUtil add{beanName}({beanName} {beanParamName}) {
+        ResultUtil r=new ResultUtil();
+        int count={daoParamName}.add{beanName}({beanParamName});
+        if(count>0){
+            r.setResult(ResultUtil.SUCCESS);
+        }else{
+            r.setResult(ResultUtil.ERROR);
+        }
+        return r;
+    }
+
+    @Override
+    @Transactional
+    public ResultUtil update{beanName}({beanName} {beanParamName}) {
+        ResultUtil r=new ResultUtil();
+        int count={daoParamName}.update{beanName}({beanParamName});
+        if(count>0){
+            r.setResult(ResultUtil.SUCCESS);
+        }else{
+            r.setResult(ResultUtil.ERROR);
+        }
+        return r;
+    }
+
+    @Override
+    public ResultUtil get{beanName}(Long id) {
+        {beanName} {beanParamName}= {daoParamName}.get{beanName}(id);
+        return new ResultUtil(ResultUtil.SUCCESS,"查询成功",{beanParamName});
+    }
+
+
+    @Override
+    public PageDataResult select{beanName}InfoList({beanName} {beanParamName}, String startDate, String endDate, int page, int limit) {
+
+        PageDataResult pdr=new PageDataResult();
+        PageHelper.startPage(page, limit);
+        List<{beanName}> {beanParamName}List={daoParamName}.select{beanName}InfoList({beanParamName}, startDate, endDate);
+        PageInfo<{beanName}> pageInfo = new PageInfo<{beanName}>({beanParamName}List);
+        pdr.setTotals(Long.valueOf(pageInfo.getTotal()).intValue());
+        pdr.setList({beanParamName}List);
+        return pdr;
+    }
+}

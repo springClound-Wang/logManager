@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.wupao.log.mapper.ProjectMapper" >
+    <sql id="where">
+        <where>
+            <if test="params.projectName != null and params.projectName != ''">
+                and project_name = #{params.projectName}
+            </if>
+
+        </where>
+    </sql>
+
+    <select id="selectProjectInfoList" resultType="com.wupao.log.pojo.Project">
+        select *
+        from t_project
+        <where>
+            <if test="startDate!=null and startDate!=''">
+                and update_time &gt;#{startDate}
+            </if>
+            <if test="endDate!=null and endDate!=''">
+                and update_time &lt;#{endDate}
+            </if>
+
+            <if test="project.projectName!=null and project.projectName!=''">
+                and project_name like concat(concat('%',#{project.projectName}),'%')
+            </if>
+            and is_del=1
+        </where>
+        order by update_time desc
+    </select>
+    <update id="delProjectInfo">
+        update t_project set is_del=0 where id=#{id}
+    </update>
+    <update id="updateProject">
+        update t_project t
+        <set>
+            <if test="projectName != null and projectName!=''">
+                project_name = #{project.projectName},
+            </if>
+        </set>
+        where t.id = #{id}
+    </update>
+</mapper>
