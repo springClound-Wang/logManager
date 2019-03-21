@@ -1,7 +1,4 @@
-package com.wupao.log.service;
-
-import com.wupao.log.pojo.BeanField;
-import com.wupao.log.pojo.GenerateInput;
+package com.wupao.log.auto;
 
 import java.util.List;
 

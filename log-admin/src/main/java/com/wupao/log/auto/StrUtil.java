@@ -1,4 +1,4 @@
-package com.wupao.log.utils;
+package com.wupao.log.auto;
 
 import com.google.common.collect.Lists;
 

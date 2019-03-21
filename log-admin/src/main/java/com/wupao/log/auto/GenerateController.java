@@ -1,7 +1,5 @@
-package com.wupao.log.web;
+package com.wupao.log.auto;
 
-import com.wupao.log.pojo.GenerateInput;
-import com.wupao.log.service.GenerateService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

@@ -1,4 +1,4 @@
-package com.wupao.log.utils;
+package com.wupao.log.auto;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;

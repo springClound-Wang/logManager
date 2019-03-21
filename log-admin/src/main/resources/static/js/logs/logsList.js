@@ -11,8 +11,8 @@ $(function () {
         var laydate = layui.laydate;
         var table = layui.table;
         tableIns = table.render({
-            elem: '#usersTable'
-            , url: '/users/selectUsersInfoList'
+            elem: '#logsTable'
+            , url: '/logs/selectLogsInfoList'
             , method: 'post' //默认：get请求
             , cellMinWidth: 100
             , page: true,
@@ -29,8 +29,10 @@ $(function () {
             }
             , cols: [[
                     				{field: 'id', title: 'id', align: 'center'},
-				{field: 'name', title: 'name', align: 'center'},
-				{field: 'phone', title: 'phone', align: 'center'},
+				{field: 'projectId', title: 'projectId', align: 'center'},
+				{field: 'logMessage', title: 'logMessage', align: 'center'},
+				{field: 'logLevel', title: 'logLevel', align: 'center'},
+				{field: 'projectType', title: 'projectType', align: 'center'},
 				{field: 'createTime', title: 'createTime', align: 'center'},
 				{field: 'updateTime', title: 'updateTime', align: 'center'},
 
@@ -78,21 +80,21 @@ $(function () {
         });
         //监听清空
         form.on('submit(clear)', function (data) {
-            $('#usersForm')[0].reset();
+            $('#logsForm')[0].reset();
             load();
             return false;
         });
         //监听添加
         form.on('submit(add)', function (data) {
-            openUsers();
+            openLogs();
             return false;
         });
         //监听提交添加
         form.on('submit(addSubmit)', function (data) {
-            var formdata = $("#usersInfo").serializeObject();
+            var formdata = $("#logsInfo").serializeObject();
 
             $.ajax({
-                url: '/users/addUsers',
+                url: '/logs/addLogs',
                 type: 'POST',
                 data: formdata,
                 dataType:"json",
@@ -117,9 +119,9 @@ $(function () {
         });
         //监听提交修改
         form.on('submit(updateSubmit)', function (data) {
-            var formdata = $("#usersInfo").serializeObject();
+            var formdata = $("#logsInfo").serializeObject();
             $.ajax({
-                url: '/users/updateUsers',
+                url: '/logs/updateLogs',
                 type: 'POST',
                 data: formdata,
                 dataType:"json",
@@ -145,8 +147,8 @@ $(function () {
         //监听工具条
         //注：test是tool是工具条事件名，table原始容器的属性 lay-filter="对应的值"
         //监听工具条
-        table.on('sort(usersTable)', function (obj) {
-            table.reload('usersTable', {
+        table.on('sort(logsTable)', function (obj) {
+            table.reload('logsTable', {
                 initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
                 , where: { //请求参数
                     field: obj.field //排序字段
@@ -155,13 +157,13 @@ $(function () {
             });
 
         });
-        table.on('tool(usersTable)', function (obj) {
+        table.on('tool(logsTable)', function (obj) {
             var data = obj.data;
             if (obj.event == 'del') {
                 layer.confirm('您确定要删除吗?', {
                     btn: ['确认','返回'] //按钮
                 }, function(){
-                    $.post("/users/delUsersInfo/"+data.id,function(json){
+                    $.post("/logs/delLogsInfo/"+data.id,function(json){
                         if(json.result=="success"){
                             //回调弹框
                             layer.alert("删除成功!",{icon: 1,closeBtn: 0 },function(){
@@ -179,7 +181,7 @@ $(function () {
                     layer.closeAll();
                 });
             } else if (obj.event == 'update') {
-              openUsers(data.id);
+              openLogs(data.id);
             }
         });
     });
@@ -188,7 +190,7 @@ $(function () {
 function load() {
     //重新加载table
     tableIns.reload({
-        where: $('#usersForm').serializeObject(),
+        where: $('#logsForm').serializeObject(),
         page: {
             curr: pageCurr //从当前页码开始
         }
@@ -196,18 +198,20 @@ function load() {
 }
 
 
-function openUsers(id){
+function openLogs(id){
     var title="添加";
     if(id){
         title="编辑";
         $("#addSubmit").hide();
         $("#updateSubmit").show();
         //发送查询
-        $.post("/users/getUsers/"+id,function (data) {
+        $.post("/logs/getLogs/"+id,function (data) {
             if(data.data){
                 $('#id').val(data.data.id);
-$('#name').val(data.data.name);
-$('#phone').val(data.data.phone);
+$('#projectId').val(data.data.projectId);
+$('#logMessage').val(data.data.logMessage);
+$('#logLevel').val(data.data.logLevel);
+$('#projectType').val(data.data.projectType);
 $('#createTime').val(data.data.createTime);
 $('#updateTime').val(data.data.updateTime);
 
@@ -224,9 +228,9 @@ $('#updateTime').val(data.data.updateTime);
         resize :false,
         shadeClose: true,
         area: ['550px'],
-        content:$('#setUsers'),
+        content:$('#setLogs'),
         end:function(){
-            $("#usersInfo")[0].reset();
+            $("#logsInfo")[0].reset();
         }
     });
 }

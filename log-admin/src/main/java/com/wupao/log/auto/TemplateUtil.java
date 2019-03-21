@@ -1,6 +1,5 @@
-package com.wupao.log.utils;
+package com.wupao.log.auto;
 
-import com.wupao.log.pojo.GenerateInput;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

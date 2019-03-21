@@ -1,11 +1,6 @@
-package com.wupao.log.service.impl;
+package com.wupao.log.auto;
 
 import com.google.common.collect.Maps;
-import com.wupao.log.pojo.BeanField;
-import com.wupao.log.pojo.GenerateInput;
-import com.wupao.log.service.GenerateService;
-import com.wupao.log.utils.StrUtil;
-import com.wupao.log.utils.TemplateUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;

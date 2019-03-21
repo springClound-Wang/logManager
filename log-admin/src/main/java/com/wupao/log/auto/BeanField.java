@@ -1,4 +1,4 @@
-package com.wupao.log.pojo;
+package com.wupao.log.auto;
 
 import java.io.Serializable;
 
