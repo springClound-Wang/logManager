@@ -14,7 +14,6 @@ import org.springframework.context.annotation.Configuration;
  */
 @Configuration
 @SpringBootApplication
-//@ComponentScan用于配置扫描com.lyd.admin之外的包下面的类
 @ComponentScan(basePackages={"com.wupao"})
 public class LogAdminApplication {
 

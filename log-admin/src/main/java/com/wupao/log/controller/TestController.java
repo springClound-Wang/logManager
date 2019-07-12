@@ -1,11 +1,14 @@
-package com.wupao.log.web.log;
+package com.wupao.log.controller;
 
-import com.wupao.log.utils.Constants;
 import com.wupao.log.utils.DateUtil;
-import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.admin.indices.stats.IndexStats;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -16,42 +19,40 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
 import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
+/**
+ * @Auther: wzz
+ * @packageName com.wupao.log.controller
+ * @Date: 2019/6/21 10:45
+ * @Description:
+ */
+@RestController
+@RequestMapping("/test")
+public class TestController {
 
-@Controller
-@RequestMapping("/logs")
-@Slf4j
-public class LogsController {
+    //注入transportClient
     @Autowired
     private TransportClient client;
 
-    @GetMapping("/logsList")
-    public String logsList(String index, HttpServletRequest request) {
-        request.setAttribute(Constants.INDEX, index);
-        return "/logs/logsList";
-    }
-   
-    @ResponseBody
+    /**
+     * @return java.util.List<java.util.Map < java.lang.String , java.lang.Object>>
+     * @description 关键字查询
+     * @author wzz
+     * @date 2019/6/21
+     * @param[keyWord]
+     */
     @RequestMapping("/searchCourseWithKeyWord")
-    public List<Map<String, Object>> searchCourseWithKeyWord(String keyWord, String startTime, String endTime, @RequestParam("index") String index,
-        @RequestParam(value = "countSize",defaultValue = "20",required = false) Integer countSize) throws Exception{
+    public List<Map<String, Object>> searchCourseWithKeyWord(String keyWord,String startTime,String endTime) throws Exception{
+
         List<Map<String, Object>> hitsMap = new ArrayList<>();
         QueryBuilder queryBuilder;
-        /*if(StringUtils.isEmpty(keyWord)){
-            queryBuilder= null;
-        }else{
-            queryBuilder= QueryBuilders.matchQuery("message", keyWord);
-        }*/
 
         if(StringUtils.isEmpty(keyWord)&& StringUtils.isEmpty(startTime)&&StringUtils.isEmpty(endTime)){
             queryBuilder= QueryBuilders.matchAllQuery();
@@ -77,14 +78,22 @@ public class LogsController {
                             .lt(end));
         }
 
+      /*  queryBuilder = QueryBuilders.boolQuery()
+                .must(QueryBuilders.matchQuery("message", keyWord)).must(QueryBuilders.rangeQuery("@timestamp")
+                        .gt(start)
+                        .lt(end));*/
+    /*    queryBuilder = QueryBuilders.rangeQuery("@timestamp")
+                .gt(start)
+                .lt(end);*/
+       // queryBuilder= QueryBuilders.multiMatchQuery(dateTime, "@timestamp");
         //设置高亮显示
         HighlightBuilder hiBuilder=new HighlightBuilder();
         hiBuilder.preTags("<span style=\"color:red\">");
         hiBuilder.postTags("</span>");
         hiBuilder.field("message");
-        SearchRequestBuilder search=client.prepareSearch(index);
+        SearchRequestBuilder search=client.prepareSearch("lyd-web");
         search.setQuery(queryBuilder);
-        search.setSize(countSize);
+        search.setSize(20);
         search.addSort("@timestamp", SortOrder.DESC);
         SearchResponse response =search.highlighter(hiBuilder).execute().actionGet();
 
@@ -107,13 +116,73 @@ public class LogsController {
             map.remove("host");
             map.remove("@version");
             map.remove("type");
-            String time= DateUtil.simpleFomate(DateUtil.fomatPaseZ((String)map.get("@timestamp")));
+           String time= DateUtil.simpleFomate(DateUtil.fomatPaseZ((String)map.get("@timestamp")));
             map.put("time",time);
             map.remove("@timestamp");
-            map.put("countSize",countSize);
             hitsMap.add(map);
         }
         return hitsMap;
     }
 
+    /**
+     * @return java.util.Set
+     * @description 获取所有索引
+     * @author wzz
+     * @date 2019/6/21
+     * @param[]
+     */
+    @RequestMapping("/getAllIndices")
+    public Set getAllIndices() {
+
+        ActionFuture<IndicesStatsResponse> isr = client.admin().indices().stats(new IndicesStatsRequest().all());
+        IndicesAdminClient indicesAdminClient = client.admin().indices();
+        Map<String, IndexStats> indexStatsMap = isr.actionGet().getIndices();
+        Set<String> set = isr.actionGet().getIndices().keySet();
+        return set;
+    }
+
+    /**
+     * @return boolean
+     * @description 删除索引库
+     * @author wzz
+     * @date 2019/6/21
+     * @param[indexName]
+     */
+    @RequestMapping("/deleteIndex")
+    public boolean deleteIndex(String indexName) {
+        client.admin().indices().prepareDelete(indexName)
+                .execute()
+                .actionGet();
+        return true;
+    }
+    @RequestMapping("/highlighter")
+    public  SearchHits highlighter(String keyWord) throws Exception{
+        QueryBuilder queryBuilder = QueryBuilders.matchQuery(keyWord, "message");
+        HighlightBuilder hiBuilder=new HighlightBuilder();
+        hiBuilder.preTags("<h2>");
+        hiBuilder.postTags("</h2>");
+        hiBuilder.field("message");
+        // 搜索数据
+        SearchResponse response = client.prepareSearch("system-aa")
+                .setQuery(queryBuilder)
+                .highlighter(hiBuilder)
+                .execute().actionGet();
+        for (SearchHit searchHit : response.getHits()) {
+            System.out.println(searchHit);
+
+        }
+        return response.getHits();
+    }
+
+    /**
+     * 更新
+     */
+    @RequestMapping("/update1")
+    public void updateIndex() throws  Exception{
+
+    }
+
 }
+
+
+

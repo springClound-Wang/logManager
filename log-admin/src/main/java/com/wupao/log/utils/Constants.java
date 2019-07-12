@@ -104,4 +104,6 @@ public interface Constants {
 	 * 图片存储地址的key image_address
 	 */
 	String IMAGE_ADDRESS="image_address";
+	String INDEX="index";
+
 }

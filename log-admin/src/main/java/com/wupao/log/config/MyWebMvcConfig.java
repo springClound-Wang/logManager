@@ -27,7 +27,7 @@ public class MyWebMvcConfig extends WebMvcConfigurerAdapter {
 		 registry.addResourceHandler("/treegrid/**").addResourceLocations("/treegrid/");
 		 super.addResourceHandlers(registry); 
 	 }
-	 
+
 	/**
 	 * 
 	 * @描述：自定义编码 转换器

@@ -85,11 +85,12 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/treegrid/*/*", "anon");
 		filterChainDefinitionMap.put("/fragments/*", "anon");
 		filterChainDefinitionMap.put("/layout", "anon");
-		//利易达渠道接口
-		filterChainDefinitionMap.put("/generate/*", "anon");
 
 		filterChainDefinitionMap.put("/user/sendMsg", "anon");
 		filterChainDefinitionMap.put("/user/login", "anon");
+		filterChainDefinitionMap.put("/test/*", "anon");
+		filterChainDefinitionMap.put("/es/*", "anon");
+
 
 		//add操作，该用户必须有【addOperation】权限
 //		filterChainDefinitionMap.put("/add", "perms[addOperation]");

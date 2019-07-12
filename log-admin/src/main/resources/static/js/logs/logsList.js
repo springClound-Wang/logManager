@@ -1,67 +1,15 @@
-var pageCurr = 1;
-if (currentPage != null && currentPage != undefined && currentPage != "") {
-    pageCurr = currentPage;
-}
+var index=$("#dataIndex").html();
 $(function () {
-    //一般直接写在一个js文件中
-    layui.use(['layer', 'form', 'laydate', 'table', 'util'], function () {
+    if(!index){
+        alert("请从正确的入口进来此页面");
+        return;
+    }
+    log.sendData(index);
+    layui.use(['layer', 'form','laydate','table','util'], function(){
         var layer = layui.layer,
-            util = layui.util,
-            form = layui.form;
+            form = layui.form ;
         var laydate = layui.laydate;
-        var table = layui.table;
-        tableIns = table.render({
-            elem: '#logsTable'
-            , url: '/logs/selectLogsInfoList'
-            , method: 'post' //默认：get请求
-            , cellMinWidth: 100
-            , page: true,
-            request: {
-                pageName: 'page' //页码的参数名称，默认：page
-                , limitName: 'limit' //每页数据量的参数名，默认：limit
-            }, response: {
-                statusName: 'code' //数据状态的字段名称，默认：code
-                , statusCode: 200 //成功的状态码，默认：0
-                , countName: 'totals' //数据总数的字段名称，默认：count
-                , dataName: 'list' //数据列表的字段名称，默认：data
-            }, page: {
-                curr: pageCurr
-            }
-            , cols: [[
-                    				{field: 'id', title: 'id', align: 'center'},
-				{field: 'projectId', title: 'projectId', align: 'center'},
-				{field: 'logMessage', title: 'logMessage', align: 'center'},
-				{field: 'logLevel', title: 'logLevel', align: 'center'},
-				{field: 'projectType', title: 'projectType', align: 'center'},
-				{field: 'createTime', title: 'createTime', align: 'center'},
-				{field: 'updateTime', title: 'updateTime', align: 'center'},
 
-                {field: 'right', title: '操作', toolbar: '#optBar', align: 'center'}
-            ]], done: function (res, curr, count) {
-                //如果是异步请求数据方式，res即为你接口返回的信息。
-                //如果是直接赋值的方式，res即为：{data: [], count: 99} data为当前页数据、count为数据总长度
-                //console.log(res);
-                //得到当前页码
-                //console.log(curr);
-                //得到数据总量
-                //console.log(count);
-                $("[data-field='updateTime']").children().each(function (i, el) {
-                    if (i > 0) {
-                        if ($(this).text()) {
-                            $(this).text($(this).text().substring(0, 19));
-                        }
-                    }
-                });
-                 $("[data-field='createTime']").children().each(function (i, el) {
-                        if (i > 0) {
-                            if ($(this).text()) {
-                                $(this).text($(this).text().substring(0, 19));
-                            }
-                        }
-                   });
-                pageCurr = curr;
-            }
-        });
         //执行一个laydate实例
         laydate.render({
             elem: '#startDate',
@@ -73,164 +21,59 @@ $(function () {
             type: 'datetime'//指定元素
         });
         //监听搜索框
-        form.on('submit(searchSubmit)', function (data) {
+        form.on('submit(searchSubmit)', function(data){
+
             //重新加载table
-            load();
+           log.sendData(index,20,data.field.keyWord,data.field.startDate,data.field.endDate);
             return false;
         });
         //监听清空
-        form.on('submit(clear)', function (data) {
+        form.on('submit(clear)', function(data){
             $('#logsForm')[0].reset();
-            load();
+            log.sendData(index);
             return false;
         });
-        //监听添加
-        form.on('submit(add)', function (data) {
-            openLogs();
-            return false;
-        });
-        //监听提交添加
-        form.on('submit(addSubmit)', function (data) {
-            var formdata = $("#logsInfo").serializeObject();
 
-            $.ajax({
-                url: '/logs/addLogs',
-                type: 'POST',
-                data: formdata,
-                dataType:"json",
-                success: function (data) {
-                    if(data.result=="success"){
-                        layer.msg("操作成功", {shift: -1, time: 1000}, function(){
-                            layer.closeAll();
-                        });
-                    }else{
-                        layer.msg("操作失败", {shift: -1, time: 1000}, function(){
-                            layer.closeAll();
-                        });
-                    }
-                    load();
-                },
-                error:function (error) {
-                    console.log(error);
-                    layer.msg("网络错误,请稍后再试");
-                }
-            });
-            return false;
-        });
-        //监听提交修改
-        form.on('submit(updateSubmit)', function (data) {
-            var formdata = $("#logsInfo").serializeObject();
-            $.ajax({
-                url: '/logs/updateLogs',
-                type: 'POST',
-                data: formdata,
-                dataType:"json",
-                success: function (data) {
-                    if(data.result=="success"){
-                        layer.msg("操作成功", {shift: -1, time: 1000}, function(){
-                            layer.closeAll();
-                        });
-                    }else{
-                        layer.msg("操作失败", {shift: -1, time: 1000}, function(){
-                            layer.closeAll();
-                        });
-                    }
-                    load();
-                },
-                error:function (error) {
-                    console.log(error);
-                    layer.msg("网络错误,请稍后再试");
-                }
-            });
-            return false;
-        });
-        //监听工具条
-        //注：test是tool是工具条事件名，table原始容器的属性 lay-filter="对应的值"
-        //监听工具条
-        table.on('sort(logsTable)', function (obj) {
-            table.reload('logsTable', {
-                initSort: obj //记录初始排序，如果不设的话，将无法标记表头的排序状态。 layui 2.1.1 新增参数
-                , where: { //请求参数
-                    field: obj.field //排序字段
-                    , order: obj.type //排序方式
-                }
-            });
-
-        });
-        table.on('tool(logsTable)', function (obj) {
-            var data = obj.data;
-            if (obj.event == 'del') {
-                layer.confirm('您确定要删除吗?', {
-                    btn: ['确认','返回'] //按钮
-                }, function(){
-                    $.post("/logs/delLogsInfo/"+data.id,function(json){
-                        if(json.result=="success"){
-                            //回调弹框
-                            layer.alert("删除成功!",{icon: 1,closeBtn: 0 },function(){
-                                layer.closeAll();
-                                //加载load方法
-                                load();//自定义
-                            });
-                        }else{
-                            layer.alert("删除失败");//弹出错误提示
-                            //加载load方法
-                            load();//自定义
-                        }
-                    });
-                }, function(){
-                    layer.closeAll();
-                });
-            } else if (obj.event == 'update') {
-              openLogs(data.id);
-            }
-        });
     });
 });
+var log={
+    sendData:function(index,countSize,keyWord,startTime,endTime){
+        $.ajax({
+            type: "post",
+            url: "/logs/searchCourseWithKeyWord",
+            data: {"keyWord":keyWord, "startTime":startTime,"endTime":endTime,"index":index,"countSize":countSize},
+            success: function(data){
+                if(data&&data.length>0){
+                    $('#resText').empty();   //清空resText里面的所有内容
+                    var html = '';
+                    $.each(data, function(commentIndex,comment){
+                        html += '<tr> <td>'+comment.time+'</td><td>'+comment.message+'</td> </tr>';
+                    });
+                    $('#resText').html(html);
+                    if(data[0].countSize>data.length){
+                        $("#seeMore").html("暂无更多数据");
+                    }else{
+                        $("#seeMore").html("查看更多").attr("data-data",data[0].countSize);
+                    }
+                }else{
+                    $('#resText').empty();
+                    $("#seeMore").html("暂无更多数据");
+                }
 
-function load() {
-    //重新加载table
-    tableIns.reload({
-        where: $('#logsForm').serializeObject(),
-        page: {
-            curr: pageCurr //从当前页码开始
-        }
-    });
-}
-
-
-function openLogs(id){
-    var title="添加";
-    if(id){
-        title="编辑";
-        $("#addSubmit").hide();
-        $("#updateSubmit").show();
-        //发送查询
-        $.post("/logs/getLogs/"+id,function (data) {
-            if(data.data){
-                $('#id').val(data.data.id);
-$('#projectId').val(data.data.projectId);
-$('#logMessage').val(data.data.logMessage);
-$('#logLevel').val(data.data.logLevel);
-$('#projectType').val(data.data.projectType);
-$('#createTime').val(data.data.createTime);
-$('#updateTime').val(data.data.updateTime);
-
+            },
+            error:function (error) {
+                $("#seeMore").html("接口请求错误,稍后再试");
             }
         });
-    }else{
-        $("#addSubmit").show();
-        $("#updateSubmit").hide();
-    }
-    layer.open({
-        type:1,
-        title: title,
-        fixed:false,
-        resize :false,
-        shadeClose: true,
-        area: ['550px'],
-        content:$('#setLogs'),
-        end:function(){
-            $("#logsInfo")[0].reset();
+    },
+    clickSeeMore:function () {
+        var data=$("#seeMore").attr("data-data");
+        if(data){
+            data=parseInt(data);
+            log.sendData(index,data+20, $("#keyWord").val(), $("#startDate").val(), $("#endDate").val());
+        } else{
+            $("#seeMore").html("暂无更多数据");
         }
-    });
+
+    }
 }
