@@ -4,8 +4,13 @@ import com.wupao.log.utils.Constants;
 import com.wupao.log.utils.DateUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.elasticsearch.action.ActionFuture;
+import org.elasticsearch.action.admin.indices.stats.IndexStats;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsRequest;
+import org.elasticsearch.action.admin.indices.stats.IndicesStatsResponse;
 import org.elasticsearch.action.search.SearchRequestBuilder;
 import org.elasticsearch.action.search.SearchResponse;
+import org.elasticsearch.client.IndicesAdminClient;
 import org.elasticsearch.client.transport.TransportClient;
 import org.elasticsearch.common.text.Text;
 import org.elasticsearch.index.query.QueryBuilder;
@@ -26,6 +31,7 @@ import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 
 @Controller
@@ -40,18 +46,28 @@ public class LogsController {
         request.setAttribute(Constants.INDEX, index);
         return "/logs/logsList";
     }
-   
+    @RequestMapping("/count")
+    public  List count(@RequestParam(value = "list[]") String[] list, String index)throws Exception{
+        List hitsMap = new ArrayList<>();
+        for (int i=0;i<list.length-1;i++) {
+            QueryBuilder queryBuilder= QueryBuilders.boolQuery()
+                    .must(QueryBuilders.matchQuery("message", "error_info")).must(QueryBuilders.rangeQuery("@timestamp")
+                            .gte(list[i])
+                            .lt(list[i+1]));
+            SearchRequestBuilder search=client.prepareSearch(index);
+            search.setQuery(queryBuilder);
+            SearchResponse response =search.execute().actionGet();
+            SearchHits hits = response.getHits();
+            hitsMap.add(hits.getTotalHits());
+        }
+        return hitsMap;
+    }
     @ResponseBody
     @RequestMapping("/searchCourseWithKeyWord")
     public List<Map<String, Object>> searchCourseWithKeyWord(String keyWord, String startTime, String endTime, @RequestParam("index") String index,
-        @RequestParam(value = "countSize",defaultValue = "20",required = false) Integer countSize) throws Exception{
+        @RequestParam(value = "countSize",defaultValue = "40",required = false) Integer countSize) throws Exception{
         List<Map<String, Object>> hitsMap = new ArrayList<>();
         QueryBuilder queryBuilder;
-        /*if(StringUtils.isEmpty(keyWord)){
-            queryBuilder= null;
-        }else{
-            queryBuilder= QueryBuilders.matchQuery("message", keyWord);
-        }*/
 
         if(StringUtils.isEmpty(keyWord)&& StringUtils.isEmpty(startTime)&&StringUtils.isEmpty(endTime)){
             queryBuilder= QueryBuilders.matchAllQuery();
@@ -62,20 +78,32 @@ public class LogsController {
             Object start=DateUtil.convertToUTC(DateUtil.fomatPaseTime(startTime));
             queryBuilder = QueryBuilders.boolQuery()
                     .must(QueryBuilders.matchQuery("message", keyWord)).must(QueryBuilders.rangeQuery("@timestamp")
-                            .gt(start));
-        }else if(StringUtils.isNotEmpty(keyWord)&&StringUtils.isEmpty(startTime)&&StringUtils.isNotEmpty(endTime)) {
+                            .gte(start));
+        }else if(StringUtils.isEmpty(keyWord)&&StringUtils.isNotEmpty(startTime)&&StringUtils.isEmpty(endTime)) {
+            Object start=DateUtil.convertToUTC(DateUtil.fomatPaseTime(startTime));
+            queryBuilder = QueryBuilders.boolQuery().
+                    must(QueryBuilders.rangeQuery("@timestamp")
+                            .gte(start));
+        }
+        else if(StringUtils.isNotEmpty(keyWord)&&StringUtils.isEmpty(startTime)&&StringUtils.isNotEmpty(endTime)) {
             Object end=DateUtil.convertToUTC(DateUtil.fomatPaseTime(endTime));
             queryBuilder = QueryBuilders.boolQuery()
                     .must(QueryBuilders.matchQuery("message", keyWord)).must(QueryBuilders.rangeQuery("@timestamp")
-                            .lt(end));
+                            .lte(end));
+        }  else if(StringUtils.isEmpty(keyWord)&&StringUtils.isEmpty(startTime)&&StringUtils.isNotEmpty(endTime)) {
+            Object end=DateUtil.convertToUTC(DateUtil.fomatPaseTime(endTime));
+            queryBuilder = QueryBuilders.boolQuery()
+                    .must(QueryBuilders.rangeQuery("@timestamp")
+                            .lte(end));
         }else{
             Object start=DateUtil.convertToUTC(DateUtil.fomatPaseTime(startTime));
             Object end=DateUtil.convertToUTC(DateUtil.fomatPaseTime(endTime));
             queryBuilder = QueryBuilders.boolQuery()
                     .must(QueryBuilders.matchQuery("message", keyWord)).must(QueryBuilders.rangeQuery("@timestamp")
-                            .gt(start)
-                            .lt(end));
+                            .gte(start)
+                            .lte(end));
         }
+
 
         //设置高亮显示
         HighlightBuilder hiBuilder=new HighlightBuilder();
@@ -103,17 +131,30 @@ public class LogsController {
                 //将高亮片段组装到结果中去
                 map.put("message",nameTmp);
             }
-            map.remove("path");
-            map.remove("host");
-            map.remove("@version");
-            map.remove("type");
             String time= DateUtil.simpleFomate(DateUtil.fomatPaseZ((String)map.get("@timestamp")));
             map.put("time",time);
             map.remove("@timestamp");
-            map.put("countSize",countSize);
+            map.remove("@version");
             hitsMap.add(map);
         }
         return hitsMap;
+    }
+    /**
+     * @return java.util.Set
+     * @description 获取所有索引
+     * @author wzz
+     * @date 2019/6/21
+     * @param[]
+     */
+    @RequestMapping("/getAllIndices")
+    @ResponseBody
+    public Set getAllIndices() {
+
+        ActionFuture<IndicesStatsResponse> isr = client.admin().indices().stats(new IndicesStatsRequest().all());
+        IndicesAdminClient indicesAdminClient = client.admin().indices();
+        Map<String, IndexStats> indexStatsMap = isr.actionGet().getIndices();
+        Set<String> set = isr.actionGet().getIndices().keySet();
+        return set;
     }
 
 }

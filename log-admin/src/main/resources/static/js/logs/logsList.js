@@ -24,7 +24,7 @@ $(function () {
         form.on('submit(searchSubmit)', function(data){
 
             //重新加载table
-           log.sendData(index,20,data.field.keyWord,data.field.startDate,data.field.endDate);
+           log.sendData(index,40,data.field.keyWord,data.field.startDate,data.field.endDate);
             return false;
         });
         //监听清空

@@ -1,18 +1,27 @@
 package com.wupao.log.controller;
 
 import org.elasticsearch.action.index.IndexResponse;
+import org.elasticsearch.action.search.SearchRequestBuilder;
+import org.elasticsearch.action.search.SearchResponse;
 import org.elasticsearch.client.transport.TransportClient;
+import org.elasticsearch.common.text.Text;
 import org.elasticsearch.common.xcontent.XContentBuilder;
 import org.elasticsearch.common.xcontent.XContentFactory;
+import org.elasticsearch.index.query.QueryBuilder;
+import org.elasticsearch.index.query.QueryBuilders;
+import org.elasticsearch.search.SearchHit;
+import org.elasticsearch.search.SearchHits;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightBuilder;
+import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 /**
  * @Auther: wzz
@@ -26,27 +35,75 @@ public class EsController {
 
     @Autowired
     private TransportClient client;
+
     /**
-     * 添加文档
-     *
-     * @param id   book id
-     * @param name book name
+     * 增加
+     * @param name
+     * @param age
+     * @param date
+     * @param country
+     * @return
      */
-    @RequestMapping(value = "/book", method = RequestMethod.POST)
-    public ResponseEntity<String> add(@RequestParam("id") String id, @RequestParam("name") String name) {
+    @PostMapping("/add")
+    @ResponseBody
+    public ResponseEntity add(
+            @RequestParam(name = "name") String name,
+            @RequestParam(name = "age") int age,
+            @RequestParam(name = "country") String country
+    ){
         try {
-            // 构造ES的文档，这里注意startObject()开始构造，结束构造一定要加上endObject()
-            XContentBuilder content = XContentFactory.jsonBuilder().startObject().
-                    field("id", id)
+            XContentBuilder content = XContentFactory.jsonBuilder()
+                    .startObject()
                     .field("name", name)
+                    .field("age", age)
+                    .field("country", country)
                     .endObject();
-            IndexResponse result = client.prepareIndex("book", "novel")
-                    .setSource(content).get();
-            return new ResponseEntity<>(result.getId(), HttpStatus.OK);
+            // prepareIndex构建索引
+            IndexResponse result = this.client.prepareIndex("people", "man")
+                    .setSource(content)
+                    .get();
+            return new ResponseEntity(result.getId(), HttpStatus.OK);
         } catch (IOException e) {
             e.printStackTrace();
+            return new ResponseEntity(HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return null;
+
     }
 
+    @RequestMapping("/keyWord")
+    public List<Map<String, Object>> searchCourseWithKeyWord(String keyWord) throws Exception{
+
+        List<Map<String, Object>> hitsMap = new ArrayList<>();
+        QueryBuilder queryBuilder= QueryBuilders.matchQuery("name", keyWord);
+
+
+        //设置高亮显示
+        HighlightBuilder hiBuilder=new HighlightBuilder();
+        hiBuilder.preTags("<span style=\"color:red\">");
+        hiBuilder.postTags("</span>");
+        hiBuilder.field("name");
+        SearchRequestBuilder search=client.prepareSearch("people");
+        search.setQuery(queryBuilder);
+        search.setSize(20);
+        SearchResponse response =search.highlighter(hiBuilder).execute().actionGet();
+
+        SearchHits hits = response.getHits();
+
+        for (SearchHit hit : hits) {
+            Map<String, Object> map = hit.getSourceAsMap();
+            Map<String, HighlightField> highlightFields = hit.getHighlightFields();
+            HighlightField nameField = highlightFields.get("name");
+            if(nameField!=null){
+                Text[] fragments = nameField.fragments();
+                String nameTmp ="";
+                for(Text text:fragments){
+                    nameTmp+=text;
+                }
+                //将高亮片段组装到结果中去
+                map.put("name",nameTmp);
+            }
+            hitsMap.add(map);
+        }
+        return hitsMap;
+    }
 }

@@ -1,11 +1,11 @@
 package com.wupao.log.shiro;
 
 import com.wupao.log.mapper.AdminUserMapper;
+import com.wupao.log.pojo.AdminUser;
 import com.wupao.log.pojo.Permission;
 import com.wupao.log.pojo.Role;
-import com.wupao.log.pojo.AdminUser;
 import com.wupao.log.service.AuthService;
-import com.wupao.log.service.UserServiceImpl;
+import com.wupao.log.service.impl.UserServiceImpl;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 import org.apache.shiro.SecurityUtils;
@@ -67,13 +67,11 @@ public class ShiroRealm extends AuthorizingRealm {
 				for (Role role : roles) {
 					authorizationInfo.addRole(role.getCode());
 					// 角色对应的权限数据
-					List<Permission> perms = this.authService.findPermsByRoleId(role
-							.getId());
+					List<Permission> perms = this.authService.findPermsByRoleId(role.getId());
 					if (null != perms && perms.size() > 0) {
 						// 授权角色下所有权限
 						for (Permission perm : perms) {
-							authorizationInfo.addStringPermission(perm
-									.getCode());
+							authorizationInfo.addStringPermission(perm.getCode());
 						}
 					}
 				}

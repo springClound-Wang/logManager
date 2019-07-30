@@ -1,4 +1,4 @@
-package com.wupao.log.service;
+package com.wupao.log.service.impl;
 
 
 import com.wupao.log.entity.PermissionVO;
@@ -9,6 +9,7 @@ import com.wupao.log.mapper.RolePermissionMapper;
 import com.wupao.log.pojo.Permission;
 import com.wupao.log.pojo.Role;
 import com.wupao.log.pojo.RolePermissionKey;
+import com.wupao.log.service.AuthService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

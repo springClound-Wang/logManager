@@ -91,10 +91,8 @@ public class ShiroConfig {
 		filterChainDefinitionMap.put("/test/*", "anon");
 		filterChainDefinitionMap.put("/es/*", "anon");
 
-
 		//add操作，该用户必须有【addOperation】权限
 //		filterChainDefinitionMap.put("/add", "perms[addOperation]");
-
 		// <!-- authc:所有url都必须认证通过才可以访问; anon:所有url都都可以匿名访问【放行】-->
 		filterChainDefinitionMap.put("/**", "kickout,authc");
 		filterChainDefinitionMap.put("/*/*", "authc");
